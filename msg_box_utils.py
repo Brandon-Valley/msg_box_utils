@@ -47,9 +47,8 @@ BTN_NUM_NAME_D = {
 
 
 
-
 ''' Internal '''
-def root_msg_box(type_num, title, msg, output_define_d = None):
+def root_msg_box(type_num, title, msg, output_define_d):
     MessageBox = ctypes.windll.user32.MessageBoxW
     out_num = MessageBox(None, msg, title, type_num)
     out_str = BTN_NUM_NAME_D[out_num]
@@ -62,16 +61,23 @@ def root_msg_box(type_num, title, msg, output_define_d = None):
         else:
             raise Exception('ERROR:  "' + out_str + '" returned by the msg box is not a key in given output_define_d: ' + output_define_d)
         
+        
 
+''' External '''        
+def msg_box__OK                 (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__OK                 , title, msg, output_define_d)        
+def msg_box__OK_CANCEL          (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__OK_CANCEL          , title, msg, output_define_d)        
+def msg_box__ABORT_RETRY_IGNORE (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__ABORT_RETRY_IGNORE , title, msg, output_define_d)        
+def msg_box__YES_NO_CANCEL      (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO_CANCEL      , title, msg, output_define_d)        
+def msg_box__YES_NO             (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO             , title, msg, output_define_d)        
+def msg_box__RETRY_CANCEL       (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__RETRY_CANCEL       , title, msg, output_define_d)        
+def msg_box__CRITICAL_MSG_ICON  (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__CRITICAL_MSG_ICON  , title, msg, output_define_d)        
+def msg_box__WARNING_QUERY_ICON (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__WARNING_QUERY_ICON , title, msg, output_define_d)        
+def msg_box__WARNING_MSG_ICON   (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__WARNING_MSG_ICON   , title, msg, output_define_d)        
+def msg_box__INFO_MSG_ICON      (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__INFO_MSG_ICON      , title, msg, output_define_d)        
 
-
-
-
-
-
-
-
-
+        
+        
+        
 ''' -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- All Utilities Standard Footer -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- '''
 sys.modules = og_sys_modules
 ''' ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ '''
@@ -98,7 +104,8 @@ if __name__ == '__main__':
                        'cancel': False
                        }
     
-    print(root_msg_box(type_num, title, msg, output_define_d))
+#     print(root_msg_box(type_num, title, msg, output_define_d))
+    print(msg_box__YES_NO_CANCEL(title, msg, output_define_d))
     
     
     
