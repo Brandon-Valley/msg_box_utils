@@ -24,23 +24,45 @@ import ctypes
 
 
 
-MSG_BOX_TYPE_NUM__OK                 = 0 
-MSG_BOX_TYPE_NUM__OK_CANCEL          = 1 
-MSG_BOX_TYPE_NUM__ABORT_RETRY_IGNORE = 2 
-MSG_BOX_TYPE_NUM__YES_NO_CANCEL      = 3 
-MSG_BOX_TYPE_NUM__YES_NO             = 4 
-MSG_BOX_TYPE_NUM__RETRY_CANCEL       = 5 
-MSG_BOX_TYPE_NUM__CRITICAL_MSG_ICON  = 16
-MSG_BOX_TYPE_NUM__WARNING_QUERY_ICON = 2 
-MSG_BOX_TYPE_NUM__WARNING_MSG_ICON   = 48
-MSG_BOX_TYPE_NUM__INFO_MSG_ICON      = 64
+TYPE_NUM__OK                 = 0 
+TYPE_NUM__OK_CANCEL          = 1 
+TYPE_NUM__ABORT_RETRY_IGNORE = 2 
+TYPE_NUM__YES_NO_CANCEL      = 3 
+TYPE_NUM__YES_NO             = 4 
+TYPE_NUM__RETRY_CANCEL       = 5 
+TYPE_NUM__CRITICAL_MSG_ICON  = 16
+TYPE_NUM__WARNING_QUERY_ICON = 2 
+TYPE_NUM__WARNING_MSG_ICON   = 48
+TYPE_NUM__INFO_MSG_ICON      = 64
+
+BTN_NUM_NAME_D = {
+                     1 : 'ok'    , # also X for OK
+                     2 : 'cancel', # also X for anything with CANCEL btn
+                     3 : 'abort' ,
+                     4 : 'retry' ,
+                     5 : 'ignore',
+                     6 : 'yes'   ,
+                     7 : 'no'    
+                 }
+
 
 
 
 ''' Internal '''
-def root_msg_box(type_num, title, msg):
+def root_msg_box(type_num, title, msg, output_define_d = None):
     MessageBox = ctypes.windll.user32.MessageBoxW
-    MessageBox(None, msg, title, type_num)
+    out_num = MessageBox(None, msg, title, type_num)
+    out_str = BTN_NUM_NAME_D[out_num]
+    
+    if output_define_d == None:
+        return out_str
+    else:
+        if out_str in output_define_d.keys():
+            return output_define_d[out_str]
+        else:
+            raise Exception('ERROR:  "' + out_str + '" returned by the msg box is not a key in given output_define_d: ' + output_define_d)
+        
+
 
 
 
@@ -56,11 +78,27 @@ sys.modules = og_sys_modules
 if __name__ == '__main__':
     print('In Main:  msg_box_utils')
     
-    type_num = MSG_BOX_TYPE_NUM__CRITICAL_MSG_ICON
+#     type_num = TYPE_NUM__OK                
+#     type_num = TYPE_NUM__OK_CANCEL         
+#     type_num = TYPE_NUM__ABORT_RETRY_IGNORE
+    type_num = TYPE_NUM__YES_NO_CANCEL     
+#     type_num = TYPE_NUM__YES_NO            
+#     type_num = TYPE_NUM__RETRY_CANCEL      
+#     type_num = TYPE_NUM__CRITICAL_MSG_ICON 
+#     type_num = TYPE_NUM__WARNING_QUERY_ICON
+#     type_num = TYPE_NUM__WARNING_MSG_ICON  
+#     type_num = TYPE_NUM__INFO_MSG_ICON     
+    
+    
+    
     title = 'test title'
     msg = 'test msg'
+    output_define_d = {'yes': True,
+                       'no' : False,
+                       'cancel': False
+                       }
     
-    print(root_msg_box(type_num, title, msg))
+    print(root_msg_box(type_num, title, msg, output_define_d))
     
     
     
