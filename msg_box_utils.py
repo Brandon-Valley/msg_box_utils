@@ -122,20 +122,21 @@ def root_msg_box(type_num, title, msg, icon, output_define_d, app_id):
     eu.error_if_param_type_not_in_whitelist(output_define_d, ['dict', 'NoneType'])
     eu.error_if_param_type_not_in_whitelist(app_id, ['str', 'NoneType'])
     
+    
     # add icon if given
     if icon != None:
         type_num = type_num | ICON_KEY_TYPE_NUM_D[icon]
+    
+    # sets tool bar icon to match parent's if any
+    if app_id != None:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+    
     
     # create msg_box
     MessageBox = ctypes.windll.user32.MessageBoxW
     out_num = MessageBox(None, msg, title, type_num)
     out_str = BTN_NUM_NAME_D[out_num]
 
-
-    # sets tool bar icon to match parent's if any
-    if app_id != None:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
-    
     
     # change return if output_define_d given
     if output_define_d == None:
