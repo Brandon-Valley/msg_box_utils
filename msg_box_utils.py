@@ -1,7 +1,7 @@
 ''' -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- All Utilities Standard Header -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- '''
 import sys, os    ;     sys.path.insert(1, os.path.join(sys.path[0], os.path.dirname(os.path.abspath(__file__)))) # to allow for relative imports, delete any imports under this line
 
-util_submodule_l = []  # list of all imports from local util_submodules that could be imported elsewhere to temporarily remove from sys.modules
+util_submodule_l = ['exception_utils']  # list of all imports from local util_submodules that could be imported elsewhere to temporarily remove from sys.modules
 
 # temporarily remove any modules that could conflict with this file's local util_submodule imports
 og_sys_modules = sys.modules    ;    pop_l = [] # save the original sys.modules to be restored at the end of this file
@@ -12,11 +12,13 @@ util_submodule_import_check_count = 0 # count to make sure you don't add a local
 
 ''' -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- All Utilities Standard: Local Utility Submodule Imports  -- VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV -- '''
 
-# import custom_exceptions as ce                                         ; util_submodule_import_check_count += 1
+from util_submodules.exception_utils import exception_utils as eu                                       ; util_submodule_import_check_count += 1
 
 ''' ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ '''
 if util_submodule_import_check_count != len(util_submodule_l)    :    raise Exception("ERROR:  You probably added a local util_submodule import without adding it to the util_submodule_l")
 ''' ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ '''
+# https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messagebox?redirectedfrom=MSDN
+# https://stackoverflow.com/questions/27257018/python-messagebox-with-icons-using-ctypes-and-windll
 
 
 
@@ -28,12 +30,19 @@ TYPE_NUM__OK                 = 0
 TYPE_NUM__OK_CANCEL          = 1 
 TYPE_NUM__ABORT_RETRY_IGNORE = 2 
 TYPE_NUM__YES_NO_CANCEL      = 3 
-TYPE_NUM__YES_NO             = 4 
+TYPE_NUM__YES_NO             = 4
 TYPE_NUM__RETRY_CANCEL       = 5 
 TYPE_NUM__CRITICAL_MSG_ICON  = 16
-TYPE_NUM__WARNING_QUERY_ICON = 2 
-TYPE_NUM__WARNING_MSG_ICON   = 48
-TYPE_NUM__INFO_MSG_ICON      = 64
+
+TYPE_NUM__STOP_ICON          = 0x10
+TYPE_NUM__QUESTION_ICON      = 0x20
+TYPE_NUM__EXLAIM_ICON        = 0x30
+TYPE_NUM__INFO_ICON          = 0x30
+
+ICON_KEY_TYPE_NUM_D = {'stop'    : TYPE_NUM__STOP_ICON,
+                       'question': TYPE_NUM__QUESTION_ICON,
+                       'exclaim' : TYPE_NUM__EXLAIM_ICON,
+                       'info'    : TYPE_NUM__INFO_ICON}
 
 BTN_NUM_NAME_D = {
                      1 : 'ok'    , # also X for OK
@@ -48,7 +57,17 @@ BTN_NUM_NAME_D = {
 
 
 ''' Internal '''
-def root_msg_box(type_num, title, msg, output_define_d):
+def root_msg_box(type_num, title, msg, icon, output_define_d):
+    eu.error_if_param_type_not_in_whitelist(msg, ['str'])
+    eu.error_if_param_type_not_in_whitelist(icon, ['str', 'NoneType'])
+    eu.error_if_param_key_not_in_whitelist(icon, ICON_KEY_TYPE_NUM_D.keys())
+    eu.error_if_param_type_not_in_whitelist(output_define_d, [dict, 'NoneType'])
+    
+    
+    if icon != None:
+        type_num = type_num | ICON_KEY_TYPE_NUM_D[icon]
+    
+    
     MessageBox = ctypes.windll.user32.MessageBoxW
     out_num = MessageBox(None, msg, title, type_num)
     out_str = BTN_NUM_NAME_D[out_num]
@@ -64,16 +83,14 @@ def root_msg_box(type_num, title, msg, output_define_d):
         
 
 ''' External '''        
-def msg_box__OK                 (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__OK                 , title, msg, output_define_d)        
-def msg_box__OK_CANCEL          (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__OK_CANCEL          , title, msg, output_define_d)        
-def msg_box__ABORT_RETRY_IGNORE (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__ABORT_RETRY_IGNORE , title, msg, output_define_d)        
-def msg_box__YES_NO_CANCEL      (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO_CANCEL      , title, msg, output_define_d)        
-def msg_box__YES_NO             (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO             , title, msg, output_define_d)        
-def msg_box__RETRY_CANCEL       (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__RETRY_CANCEL       , title, msg, output_define_d)        
-def msg_box__CRITICAL_MSG_ICON  (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__CRITICAL_MSG_ICON  , title, msg, output_define_d)        
-def msg_box__WARNING_QUERY_ICON (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__WARNING_QUERY_ICON , title, msg, output_define_d)        
-def msg_box__WARNING_MSG_ICON   (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__WARNING_MSG_ICON   , title, msg, output_define_d)        
-def msg_box__INFO_MSG_ICON      (title, msg, output_define_d = None): return root_msg_box(TYPE_NUM__INFO_MSG_ICON      , title, msg, output_define_d)        
+def msg_box__OK                 (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__OK                 , title, msg, icon, output_define_d)        
+def msg_box__OK_CANCEL          (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__OK_CANCEL          , title, msg, icon, output_define_d)        
+def msg_box__ABORT_RETRY_IGNORE (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__ABORT_RETRY_IGNORE , title, msg, icon, output_define_d)        
+def msg_box__YES_NO_CANCEL      (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO_CANCEL      , title, msg, icon, output_define_d)        
+def msg_box__YES_NO             (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__YES_NO             , title, msg, icon, output_define_d)        
+def msg_box__RETRY_CANCEL       (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__RETRY_CANCEL       , title, msg, icon, output_define_d)        
+def msg_box__CRITICAL_MSG_ICON  (title, msg, icon = None, output_define_d = None): return root_msg_box(TYPE_NUM__CRITICAL_MSG_ICON  , title, msg, icon, output_define_d)        
+     
 
         
         
@@ -84,16 +101,7 @@ sys.modules = og_sys_modules
 if __name__ == '__main__':
     print('In Main:  msg_box_utils')
     
-#     type_num = TYPE_NUM__OK                
-#     type_num = TYPE_NUM__OK_CANCEL         
-#     type_num = TYPE_NUM__ABORT_RETRY_IGNORE
-    type_num = TYPE_NUM__YES_NO_CANCEL     
-#     type_num = TYPE_NUM__YES_NO            
-#     type_num = TYPE_NUM__RETRY_CANCEL      
-#     type_num = TYPE_NUM__CRITICAL_MSG_ICON 
-#     type_num = TYPE_NUM__WARNING_QUERY_ICON
-#     type_num = TYPE_NUM__WARNING_MSG_ICON  
-#     type_num = TYPE_NUM__INFO_MSG_ICON     
+   
     
     
     
@@ -104,8 +112,11 @@ if __name__ == '__main__':
                        'cancel': False
                        }
     
+    icon = 'question'
+    
 #     print(root_msg_box(type_num, title, msg, output_define_d))
-    print(msg_box__YES_NO_CANCEL(title, msg, output_define_d))
+    print(msg_box__YES_NO(title, msg, icon ))
+#     print(msg_box__WARNING_MSG_ICON(title, msg, output_define_d))
     
     
     
