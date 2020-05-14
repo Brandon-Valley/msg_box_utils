@@ -61,7 +61,7 @@ BTN_NUM_NAME_D = {
 def root_msg_box(type_num, title, msg, icon, output_define_d, app_id):
     eu.error_if_param_type_not_in_whitelist(msg, ['str'])
     eu.error_if_param_type_not_in_whitelist(icon, ['str', 'NoneType'])
-    eu.error_if_param_key_not_in_whitelist(icon, ICON_KEY_TYPE_NUM_D.keys())
+    eu.error_if_param_key_not_in_whitelist(icon, [None] + list(ICON_KEY_TYPE_NUM_D.keys()))
     eu.error_if_param_type_not_in_whitelist(output_define_d, ['dict', 'NoneType'])
     eu.error_if_param_type_not_in_whitelist(app_id, ['str', 'NoneType'])
     
