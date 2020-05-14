@@ -23,7 +23,7 @@ TYPE_NUM__CRITICAL_MSG_ICON  = 16
 TYPE_NUM__STOP_ICON          = 0x10
 TYPE_NUM__QUESTION_ICON      = 0x20
 TYPE_NUM__EXLAIM_ICON        = 0x30
-TYPE_NUM__INFO_ICON          = 0x30
+TYPE_NUM__INFO_ICON          = 0x40
  
 ICON_KEY_TYPE_NUM_D = {
                         'stop'    : TYPE_NUM__STOP_ICON    ,
