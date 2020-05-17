@@ -12,21 +12,25 @@ class Temp_Msg_Box():
          
         tk.Label(self.root, text = msg).pack()
         
+    def start__with_timeout(self, timeout):
+        self.root.after(timeout * 1000, lambda: self.root.destroy())     # time in ms
+        self.root.mainloop()
+        
+        
     def start__no_timeout(self):
         self.root.mainloop()
         
     def destroy(self):
         self.root.destroy()
-# 
-# root.after(5000, lambda: root.destroy())     # time in ms
-# 
-# root.mainloop()
+
 
 
 if __name__ == "__main__":
     TMB = Temp_Msg_Box('this is title', 'this is msg')
-    TMB.start__no_timeout()
-    
-    import time
-    time.sleep(1)
-    TMB.destroy()
+#     TMB.start__no_timeout()
+#     
+#     import time
+#     time.sleep(1)
+#     TMB.destroy()
+
+    TMB.start__with_timeout(3)
