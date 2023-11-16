@@ -5,10 +5,10 @@
 import ctypes
 
 
-if __name__ == "__main__": 
-    from   usms.exception_utils import exception_utils as eu 
-else:
-    from . usms.exception_utils import exception_utils as eu
+# if __name__ == "__main__": 
+#     from   usms.exception_utils import exception_utils as eu 
+# else:
+#     from . usms.exception_utils import exception_utils as eu
 
 
 
@@ -45,12 +45,18 @@ BTN_NUM_NAME_D = {
  
 ''' Internal '''
 def root_msg_box(type_num, title, msg, icon, output_define_d, app_id):
-    eu.error_if_param_type_not_in_whitelist(msg, ['str'])
-    eu.error_if_param_type_not_in_whitelist(icon, ['str', 'NoneType'])
-    eu.error_if_param_key_not_in_whitelist(icon, [None] + list(ICON_KEY_TYPE_NUM_D.keys()))
-    eu.error_if_param_type_not_in_whitelist(output_define_d, ['dict', 'NoneType'])
-    eu.error_if_param_type_not_in_whitelist(app_id, ['str', 'NoneType'])
-     
+    # eu.error_if_param_type_not_in_whitelist(msg, ['str'])
+    # eu.error_if_param_type_not_in_whitelist(icon, ['str', 'NoneType'])
+    # eu.error_if_param_key_not_in_whitelist(icon, [None] + list(ICON_KEY_TYPE_NUM_D.keys()))
+    # eu.error_if_param_type_not_in_whitelist(output_define_d, ['dict', 'NoneType'])
+    # eu.error_if_param_type_not_in_whitelist(app_id, ['str', 'NoneType'])
+
+    assert type(msg) == str, f"{type(msg)=}, {msg=}"
+    assert type(icon) in [str, type(None)], f"{type(icon)=}, {icon=}"
+    assert icon in [None] + list(ICON_KEY_TYPE_NUM_D.keys()), f"{type(icon)=}, {icon=}"
+    assert type(output_define_d) in [dict, type(None)], f"{type(output_define_d)=}, {output_define_d=}"
+    assert type(app_id) in [str, type(None)], f"{type(app_id)=}, {app_id=}"
+
      
     # add icon if given
     if icon != None:
